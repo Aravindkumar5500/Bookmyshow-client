@@ -15,12 +15,7 @@ function getQueryParams() {
       );
       const movie = await response.json();
   
-      // Object.entries(movie.shows).flatMap(([date,showtime]) => {
-      //     console.log(date),
-      //     showtime.map((show) => {
-      //         console.log(show)
-      //     })
-      // })
+    
       if (response.ok) {
         const movieDetailsContainer = document.getElementById("movieDetails");
         movieDetailsContainer.innerHTML = `<div style="color: #fff; padding: 0px">
