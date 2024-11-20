@@ -1,7 +1,4 @@
 
-// JSON -> Javascript Object Notation
-// API -> Application Programing Interface
-// Fetch API
 
 async function fetchMovies() {
     try {
