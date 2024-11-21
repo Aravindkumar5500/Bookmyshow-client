@@ -1,11 +1,12 @@
 
 async function fetchMovies() {
-  const movieCardsContainer = document.getElementById("movieCards");
-  movieCardsContainer.innerHTML = "<p>Loading...</p>";
+  // const movieCardsContainer = document.getElementById("movieCards");
+  // movieCardsContainer.innerHTML = "<p>Loading...</p>";
 
   try {
     const response = await fetch("https://bookmyshow-backend-wl78.onrender.com/movie/get-movies");
     const movies = await response.json();
+    const movieCardsContainer = document.getElementById("movieCards");
     movieCardsContainer.innerHTML = "";
 
     if (response.ok) {
@@ -16,8 +17,10 @@ async function fetchMovies() {
         card.innerHTML = `
           <div class="card" style="cursor: pointer" onclick="location.href='details.html?id=${movie._id}'">
             <img
-              src="${movie.image || 'default-placeholder-image-url'}"
-              alt="${movie.title} poster"
+             
+              src="${movie.image}"
+              alt=""
+
             />
             <div class="card-body">
               <h5 class="card-title">${movie.title}</h5>
