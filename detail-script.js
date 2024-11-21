@@ -7,11 +7,9 @@ function getQueryParams() {
 // On window load, fetch movie details
 window.onload = async () => {
   const movieId = getQueryParams();
-  if (movieId) {
+  
     await fetchMovieDetails(movieId);
-  } else {
-    console.error("No movie ID found in URL.");
-  }
+ 
 };
 
 // Function to fetch and display movie details
@@ -49,8 +47,8 @@ async function fetchMovieDetails(movieId) {
           </div>
         </div>
         <hr style="margin-top: 50px" />
-        <h2 class="mt-4 mb-4 text-center">Book Tickets</h2>
-      `;
+        <h2 class="mt-4 mb-4 text-center">Book Tickets</h2>`;
+      
 
       // Create and append the showtime table
       const showContainer = document.createElement("div");
@@ -120,10 +118,10 @@ document.getElementById("submitBooking").addEventListener("click", async (event)
   const email = document.getElementById("email").value;
   const phoneNumber = document.getElementById("phoneNumber").value;
 
-  if (!name || !email || !phoneNumber || !seats) {
-    alert("Please fill out all fields.");
-    return;
-  }
+  // if (!name || !email || !phoneNumber || !seats) {
+  //   alert("Please fill out all fields.");
+  //   return;
+  // }
 
   try {
     const response = await fetch(
@@ -151,6 +149,7 @@ document.getElementById("submitBooking").addEventListener("click", async (event)
       );
       bookingModal.hide();
       alert("Tickets booked successfully!");
+      window.location.reload();
     } else {
       console.error("Booking failed:", result);
       alert("Booking failed. Please try again.");
