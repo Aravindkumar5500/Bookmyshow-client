@@ -2,7 +2,7 @@
 
 async function fetchMovies() {
     try {
-      const response = await fetch("https://learn-with-guvi-book-my-show-backend.onrender.com/movie/get-movies");
+      const response = await fetch("https://bookmyshow-backend-wl78.onrender.com/movie/get-movies");
       const movies = await response.json();
       const movieCardsContainer = document.getElementById("movieCards");
       movieCardsContainer.innerHTML = "";
