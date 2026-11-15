@@ -75,7 +75,9 @@
       `${currentMovie.title} · ${date} · ${show.time} · ${show.seats} seats available`;
     bookingStatus.textContent = "";
     form.reset();
-    document.getElementById("seatCount").value = "1";
+    const seatInput = document.getElementById("seatCount");
+    seatInput.max = String(Math.min(10, Math.max(1, Number(show.seats) || 1)));
+    seatInput.value = "1";
     dialog.showModal();
   }
 
