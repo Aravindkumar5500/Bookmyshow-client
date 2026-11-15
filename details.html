@@ -1,120 +1,53 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>details</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <nav
-      class="navbar navbar-expand-lg navbar-dark"
-      style="background-color: #333"
-    >
-      <div class="container">
-        <a
-          class="navbar-brand"
-          href="#"
-          style="color: #f84464 !important; font-weight: bold"
-          >bookMyshow</a
-        >
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="#" style="color: #fff !important"
-                >Movies</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#" style="color: #fff !important"
-                >Stream</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#" style="color: #fff !important"
-                >Events</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#" style="color: #fff !important"
-                >Plays</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#" style="color: #fff !important"
-                >Sports</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#" style="color: #fff !important"
-                >Activities</a
-              >
-            </li>
-          </ul>
-          <form class="d-flex">
-            <input
-              type="search"
-              class="form-control me-2"
-              placeholder="Search for Movies, Events, Plays"
-            />
-            <button class="btn btn-outline-light" type="submit">Search</button>
-          </form>
-        </div>
-      </div>
-    </nav>
-
-    <div class="container mt-4">
-      <!-- <h1 class="text-center mb-4" id="movieTitle">Indian 2</h1> -->
-      <div id="movieDetails" class="row"></div>
-
-      <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="bookingModalLabel">Book Tickets</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="bookingForm">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Full Name</label>
-                            <input type="text" class="form-control" id="name" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="phoneNumber" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phoneNumber" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="seatCount" class="form-label">How Many Seats ?</label>
-                            <input type="number" class="form-control" id="seatCount" required min="1">
-                        </div>
-                        <input type="hidden" id="modalMovieId">
-                        <input type="hidden" id="modalShowId">
-                        <input type="hidden" id="modalShowDate">
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger" id="submitBooking">Book Tickets</button>
-                </div>
-            </div>
-        </div>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17151c">
+  <title>Movie details — ScreenTime</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./detail-script.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="./index.html"><span class="brand-mark">S</span> ScreenTime</a>
+      <nav class="main-nav" aria-label="Main navigation"><a href="./index.html">← All movies</a></nav>
     </div>
-    <script src="detail-script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+  </header>
+
+  <main class="page-shell detail-shell">
+    <div id="detailStatus" class="status-panel" role="status" aria-live="polite">Loading movie details…</div>
+    <section id="movieDetails" aria-label="Movie details"></section>
+    <section class="showtime-section" aria-labelledby="showtimeTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">PLAN YOUR VISIT</p><h2 id="showtimeTitle">Available showtimes</h2></div>
+      </div>
+      <div id="showtimes" class="showtime-list"></div>
+    </section>
+  </main>
+
+  <dialog id="bookingDialog" class="booking-dialog" aria-labelledby="bookingTitle">
+    <form id="bookingForm" class="booking-form">
+      <div class="dialog-heading">
+        <div><p class="eyebrow">JUST A FEW DETAILS</p><h2 id="bookingTitle">Book your seats</h2></div>
+        <button type="button" class="icon-button" id="closeBooking" aria-label="Close booking form">×</button>
+      </div>
+      <p id="selectedShow" class="selected-show"></p>
+      <label for="name">Full name</label>
+      <input id="name" name="name" type="text" minlength="2" maxlength="100" autocomplete="name" required>
+      <label for="email">Email address</label>
+      <input id="email" name="email" type="email" maxlength="254" autocomplete="email" required>
+      <label for="phoneNumber">Phone number</label>
+      <input id="phoneNumber" name="phoneNumber" type="tel" minlength="8" maxlength="20" autocomplete="tel" pattern="[+0-9() -]{8,20}" required>
+      <label for="seatCount">Number of seats</label>
+      <input id="seatCount" name="seatCount" type="number" min="1" max="10" value="1" required>
+      <p id="bookingStatus" class="form-status" role="status" aria-live="polite"></p>
+      <button type="submit" id="submitBooking" class="primary-button">Confirm booking</button>
+      <p class="fine-print">Demo booking only. No payment will be collected.</p>
+    </form>
+  </dialog>
+
+  <footer class="site-footer"><div class="footer-inner"><a class="brand" href="./index.html"><span class="brand-mark">S</span> ScreenTime</a><p>Independent educational prototype. Not affiliated with BookMyShow.</p></div></footer>
+</body>
 </html>
