@@ -62,20 +62,32 @@
     }, { once: true });
     frame.appendChild(image);
 
-    const meta = document.createElement("div");
-    meta.className = "poster-meta";
-    const icon = document.createElement("span");
-    icon.className = "poster-meta-icon";
-    icon.setAttribute("aria-hidden", "true");
-    icon.textContent = "▣";
-    const label = document.createElement("span");
-    label.className = "poster-meta-label";
-    label.textContent = "RELEASE";
-    const value = document.createElement("span");
-    value.className = "poster-meta-value";
-    value.textContent = movie.year ? String(movie.year) : "MOVIE";
-    meta.append(icon, label, value);
-    frame.appendChild(meta);
+    const rating = Number(movie.rating ?? movie.averageRating);
+    const votes = Number(movie.votes ?? movie.voteCount ?? movie.ratingVotes);
+    const likes = Number(movie.likes ?? movie.likeCount);
+    const hasRating = Number.isFinite(rating) && rating > 0;
+    const hasLikes = Number.isFinite(likes) && likes > 0;
+
+    // Only display review/like metrics when the API actually provides them.
+    if (hasRating || hasLikes) {
+      const meta = document.createElement("div");
+      meta.className = "poster-meta";
+      const icon = document.createElement("span");
+      icon.className = "poster-meta-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = hasRating ? "★" : "👍";
+      const label = document.createElement("span");
+      label.className = "poster-meta-label";
+      label.textContent = hasRating ? rating.toFixed(1) + "/10" : new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(likes) + " Likes";
+      meta.append(icon, label);
+      if (hasRating && Number.isFinite(votes) && votes > 0) {
+        const value = document.createElement("span");
+        value.className = "poster-meta-value";
+        value.textContent = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(votes) + " Votes";
+        meta.appendChild(value);
+      }
+      frame.appendChild(meta);
+    }
     return frame;
   }
 
