@@ -54,7 +54,7 @@
       image.addEventListener("error", () => image.remove(), { once: true });
       posterFrame.appendChild(image);
     } else {
-      posterFrame.appendChild(make("div", "poster-fallback", "SCREEN TIME"));
+      posterFrame.appendChild(make("div", "poster-fallback", "POSTER UNAVAILABLE"));
     }
 
     const information = make("div", "movie-information");
@@ -128,13 +128,16 @@
       if (!response.ok) throw new Error(payload?.message || `Request failed (${response.status})`);
       if (!payload || typeof payload !== "object") throw new Error("The movie service returned invalid data.");
       currentMovie = payload;
-      document.title = `${payload.title || "Movie details"} — ScreenTime`;
+      document.title = `${payload.title || "Movie details"} — BookMyShow`;
       renderMovie(payload);
       renderShowtimes(payload);
       setDetailStatus("");
     } catch (error) {
       console.error("Unable to load movie:", error);
-      setDetailStatus(error.message || "Could not load movie details. Please try again.", "error");
+      const message = error instanceof TypeError
+        ? "Could not connect to the movie service. Check that the backend is live and that this Vercel domain is allowed in the backend CLIENT_ORIGIN CORS setting."
+        : (error.message || "Could not load movie details. Please try again.");
+      setDetailStatus(message, "error");
       showtimes.replaceChildren();
     }
   }
