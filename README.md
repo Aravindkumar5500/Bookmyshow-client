@@ -1,4 +1,4 @@
-# ScreenTime — Movie Booking UI
+# BookMyShow — Movie Booking UI
 
 A responsive movie-listing and booking-interface prototype for the companion [Movie Booking API](https://github.com/Aravindkumar5500/Bookmyshow-backend). This independent educational project is not affiliated with BookMyShow.
 
