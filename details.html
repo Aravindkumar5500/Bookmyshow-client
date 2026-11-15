@@ -40,7 +40,7 @@
       <label for="email">Email address</label>
       <input id="email" name="email" type="email" maxlength="254" autocomplete="email" required>
       <label for="phoneNumber">Phone number</label>
-      <input id="phoneNumber" name="phoneNumber" type="tel" minlength="8" maxlength="20" autocomplete="tel" pattern="[+0-9() -]{8,20}" required>
+      <input id="phoneNumber" name="phoneNumber" type="tel" minlength="8" maxlength="20" autocomplete="tel" pattern="[+0-9][0-9() -]{7,19}" required>
       <label for="seatCount">Number of seats</label>
       <input id="seatCount" name="seatCount" type="number" min="1" max="10" value="1" required>
       <p id="bookingStatus" class="form-status" role="status" aria-live="polite"></p>
