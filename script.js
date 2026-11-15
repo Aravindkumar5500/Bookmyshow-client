@@ -2,103 +2,208 @@
   const API_BASE_URL = (window.BOOKMYSHOW_API_BASE_URL || "https://bookmyshow-backend-wl78.onrender.com").replace(/\/$/, "");
   const cardsContainer = document.getElementById("movieCards");
   const status = document.getElementById("movieStatus");
+  const statusMessage = document.getElementById("statusMessage");
+  const retryButton = document.getElementById("retryButton");
   const searchForm = document.getElementById("movieSearch");
   const searchInput = document.getElementById("searchInput");
-  const resultCount = document.getElementById("resultCount");
+  const menuToggle = document.getElementById("menuToggle");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const signInButton = document.getElementById("signInButton");
   let allMovies = [];
 
-  function setStatus(message, type = "info") {
-    status.textContent = message;
-    status.className = `status-panel ${type}`;
+  function setStatus(message, type, canRetry) {
+    statusMessage.textContent = message || "";
+    status.className = "movie-status" + (type ? " " + type : "");
     status.hidden = !message;
+    retryButton.hidden = !canRetry;
   }
 
   function safeImageUrl(value) {
-    if (typeof value !== "string") return "";
+    if (typeof value !== "string" || !value.trim()) return "";
     try {
       const url = new URL(value, window.location.href);
-      return ["https:", "http:"].includes(url.protocol) ? url.href : "";
-    } catch {
+      return url.protocol === "https:" || url.protocol === "http:" ? url.href : "";
+    } catch (_error) {
       return "";
     }
   }
 
-  function renderMovies(movies) {
+  function normalizeMovieList(payload) {
+    if (Array.isArray(payload)) return payload;
+    if (payload && Array.isArray(payload.movies)) return payload.movies;
+    if (payload && Array.isArray(payload.data)) return payload.data;
+    return null;
+  }
+
+  function createPoster(movie) {
+    const frame = document.createElement("div");
+    frame.className = "poster-stage";
+    const imageUrl = safeImageUrl(movie.image);
+
+    if (!imageUrl) {
+      const placeholder = document.createElement("div");
+      placeholder.className = "poster-placeholder";
+      placeholder.textContent = movie.title || "Movie poster unavailable";
+      frame.appendChild(placeholder);
+      return frame;
+    }
+
+    const image = document.createElement("img");
+    image.className = "movie-poster";
+    image.src = imageUrl;
+    image.alt = (movie.title || "Movie") + " poster";
+    image.loading = "lazy";
+    image.decoding = "async";
+    image.addEventListener("error", function () {
+      const placeholder = document.createElement("div");
+      placeholder.className = "poster-placeholder";
+      placeholder.textContent = movie.title || "Movie poster unavailable";
+      frame.replaceChildren(placeholder);
+    }, { once: true });
+    frame.appendChild(image);
+
+    const rating = Number(movie.rating ?? movie.averageRating);
+    const votes = Number(movie.votes ?? movie.voteCount ?? movie.ratingVotes);
+    const likes = Number(movie.likes ?? movie.likeCount);
+    const hasRating = Number.isFinite(rating) && rating > 0;
+    const hasLikes = Number.isFinite(likes) && likes > 0;
+
+    // Only display review/like metrics when the API actually provides them.
+    if (hasRating || hasLikes) {
+      const meta = document.createElement("div");
+      meta.className = "poster-meta";
+      const icon = document.createElement("span");
+      icon.className = "poster-meta-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.textContent = hasRating ? "★" : "👍";
+      const label = document.createElement("span");
+      label.className = "poster-meta-label";
+      label.textContent = hasRating ? rating.toFixed(1) + "/10" : new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(likes) + " Likes";
+      meta.append(icon, label);
+      if (hasRating && Number.isFinite(votes) && votes > 0) {
+        const value = document.createElement("span");
+        value.className = "poster-meta-value";
+        value.textContent = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(votes) + " Votes";
+        meta.appendChild(value);
+      }
+      frame.appendChild(meta);
+    }
+    return frame;
+  }
+
+  function createMovieCard(movie) {
+    const card = document.createElement("a");
+    card.className = "movie-card";
+    if (movie._id) {
+      card.href = "./details.html?id=" + encodeURIComponent(movie._id);
+    } else {
+      card.href = "#recommended";
+      card.addEventListener("click", function (event) { event.preventDefault(); });
+    }
+
+    card.appendChild(createPoster(movie));
+
+    const title = document.createElement("h2");
+    title.textContent = movie.title || "Untitled movie";
+    const genre = document.createElement("p");
+    genre.className = "movie-genre";
+    genre.textContent = String(movie.genre || "Movie").replace(/,/g, " / ");
+
+    card.append(title, genre);
+    return card;
+  }
+
+  function renderMovies(movies, isSearch) {
     cardsContainer.replaceChildren();
-    resultCount.textContent = `${movies.length} ${movies.length === 1 ? "movie" : "movies"}`;
 
     if (!movies.length) {
-      setStatus(allMovies.length ? "No movies match your search. Try another title." : "No movies are available right now.", "empty");
+      setStatus(isSearch ? "No movies match your search. Try another title." : "No movies are available right now.", "empty", false);
       return;
     }
 
-    setStatus("");
     const fragment = document.createDocumentFragment();
-
-    movies.forEach((movie) => {
-      const card = document.createElement("a");
-      card.className = "movie-card";
-      card.href = `./details.html?id=${encodeURIComponent(movie._id || "")}`;
-      const posterWrap = document.createElement("div");
-      posterWrap.className = "poster-wrap";
-      const poster = document.createElement("img");
-      poster.className = "movie-poster";
-      poster.src = safeImageUrl(movie.image) || "./";
-      poster.alt = movie.title ? `${movie.title} poster` : "Movie poster";
-      poster.loading = "lazy";
-      poster.decoding = "async";
-      poster.addEventListener("error", () => {
-        poster.remove();
-        posterWrap.classList.add("poster-fallback");
-        posterWrap.textContent = "SCREEN TIME";
-      }, { once: true });
-      posterWrap.appendChild(poster);
-
-      const content = document.createElement("div");
-      content.className = "movie-card-content";
-      const title = document.createElement("h3");
-      title.textContent = movie.title || "Untitled movie";
-      const meta = document.createElement("p");
-      meta.textContent = [movie.year, movie.genre].filter(Boolean).join(" · ") || "Movie";
-      const action = document.createElement("span");
-      action.className = "text-link";
-      action.textContent = "View details →";
-      content.append(title, meta, action);
-      card.append(posterWrap, content);
-      fragment.appendChild(card);
+    movies.forEach(function (movie) {
+      if (movie && typeof movie === "object") fragment.appendChild(createMovieCard(movie));
     });
-
     cardsContainer.appendChild(fragment);
+    setStatus("", "", false);
   }
 
   async function loadMovies() {
-    setStatus("Loading movies…");
+    setStatus("Loading movies…", "", false);
     cardsContainer.replaceChildren();
+
+    const controller = new AbortController();
+    const timeout = window.setTimeout(function () { controller.abort(); }, 15000);
+
     try {
-      const response = await fetch(`${API_BASE_URL}/movie/get-movies`, {
+      const response = await fetch(API_BASE_URL + "/movie/get-movies", {
+        method: "GET",
         headers: { Accept: "application/json" },
+        signal: controller.signal
       });
-      const payload = await response.json().catch(() => null);
-      if (!response.ok) throw new Error(payload?.message || `Request failed (${response.status})`);
-      if (!Array.isArray(payload)) throw new Error("The movie service returned an unexpected response.");
-      allMovies = payload;
-      renderMovies(allMovies);
+      const payload = await response.json().catch(function () { return null; });
+      if (!response.ok) {
+        const message = payload && payload.message ? payload.message : "Movie service returned HTTP " + response.status + ".";
+        throw new Error(message);
+      }
+
+      const movies = normalizeMovieList(payload);
+      if (!movies) throw new Error("The movie service returned an unexpected response. Expected a movie list.");
+
+      allMovies = movies.filter(function (movie) { return movie && typeof movie === "object"; });
+      renderMovies(allMovies, false);
     } catch (error) {
       console.error("Unable to load movies:", error);
-      setStatus(error.message || "Could not load movies. Please refresh and try again.", "error");
-      resultCount.textContent = "";
+      let message = error.message || "Could not load movies.";
+      if (error.name === "AbortError") {
+        message = "The movie service took too long to respond. Please try again.";
+      } else if (error instanceof TypeError) {
+        message = "Could not connect to the movie service. Check that the backend is live and that this Vercel domain is allowed in the backend CLIENT_ORIGIN CORS setting.";
+      }
+      setStatus(message, "error", true);
+    } finally {
+      window.clearTimeout(timeout);
     }
   }
 
-  searchForm.addEventListener("submit", (event) => event.preventDefault());
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLocaleLowerCase();
-    const filtered = allMovies.filter((movie) =>
-      [movie.title, movie.genre, movie.director, movie.year]
-        .some((value) => String(value ?? "").toLocaleLowerCase().includes(query))
-    );
-    renderMovies(filtered);
+  searchForm.addEventListener("submit", function (event) {
+    event.preventDefault();
   });
+  searchInput.addEventListener("input", function () {
+    const query = searchInput.value.trim().toLocaleLowerCase();
+    const filtered = allMovies.filter(function (movie) {
+      return [movie.title, movie.genre, movie.director, movie.year].some(function (value) {
+        return String(value == null ? "" : value).toLocaleLowerCase().includes(query);
+      });
+    });
+    renderMovies(filtered, Boolean(query));
+  });
+
+  document.getElementById("nextMovies").addEventListener("click", function () {
+    cardsContainer.scrollBy({ left: cardsContainer.clientWidth * 0.82, behavior: "smooth" });
+  });
+  document.getElementById("previousMovies").addEventListener("click", function () {
+    cardsContainer.scrollBy({ left: -cardsContainer.clientWidth * 0.82, behavior: "smooth" });
+  });
+
+  menuToggle.addEventListener("click", function () {
+    const isOpen = menuToggle.getAttribute("aria-expanded") === "true";
+    menuToggle.setAttribute("aria-expanded", String(!isOpen));
+    menuToggle.setAttribute("aria-label", isOpen ? "Open menu" : "Close menu");
+    mobileMenu.hidden = isOpen;
+  });
+  mobileMenu.addEventListener("click", function (event) {
+    if (event.target.closest("a")) {
+      mobileMenu.hidden = true;
+      menuToggle.setAttribute("aria-expanded", "false");
+      menuToggle.setAttribute("aria-label", "Open menu");
+    }
+  });
+  signInButton.addEventListener("click", function () {
+    window.alert("Sign-in is not connected to the booking API yet.");
+  });
+  retryButton.addEventListener("click", loadMovies);
 
   loadMovies();
 })();

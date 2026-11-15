@@ -16,6 +16,8 @@ Open the local URL printed by the server. Do not open the HTML files directly fr
 
 Edit `config.js` and set `BOOKMYSHOW_API_BASE_URL` to your backend origin. The default points to the project's existing hosted API. For local development, use `http://localhost:8000`.
 
+When deploying this frontend to Vercel, add the exact deployed Vercel origin (for example, `https://your-project.vercel.app`) to the backend `CLIENT_ORIGIN` environment variable. Include custom domains too, and do not add a trailing slash.
+
 ## Included
 
 - Responsive movie listing and detail pages

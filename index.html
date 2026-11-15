@@ -3,52 +3,108 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#17151c">
-  <title>BookMyShow — Discover movies</title>
-  <meta name="description" content="Browse movies and explore available cinema showtimes.">
+  <meta name="theme-color" content="#ffffff">
+  <title>BookMyShow | Movies, Events, Plays & Sports</title>
+  <meta name="description" content="Discover movies and book tickets with the BookMyShow clone.">
   <link rel="stylesheet" href="./styles.css">
   <script defer src="./config.js"></script>
   <script defer src="./script.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <div class="header-inner">
-      <a class="brand" href="./index.html" aria-label="BookMyShow home"><span class="brand-mark">B</span> BookMyShow</a>
-      <nav class="main-nav" aria-label="Main navigation">
-        <a class="active" href="./index.html">Movies</a>
-        <a href="#now-showing">Now showing</a>
-      </nav>
+  <header class="primary-header">
+    <div class="topbar-shell">
+      <a class="brand" href="./index.html" aria-label="BookMyShow home">
+        <span class="brand-book">book</span><span class="brand-my">my</span><span class="brand-show">show</span>
+      </a>
+
       <form class="search-form" id="movieSearch" role="search">
-        <label class="sr-only" for="searchInput">Search movies</label>
-        <input id="searchInput" type="search" placeholder="Search movies…" autocomplete="off">
-        <button type="submit" aria-label="Search">Search</button>
+        <label class="sr-only" for="searchInput">Search for movies</label>
+        <span class="search-icon" aria-hidden="true"></span>
+        <input id="searchInput" type="search" placeholder="Search for Movies, Events, Plays, Sports and Activities" autocomplete="off">
       </form>
+
+      <div class="header-actions">
+        <label class="city-picker">
+          <span class="sr-only">Select city</span>
+          <select id="citySelect" aria-label="Select city">
+            <option selected>Coimbatore</option>
+            <option>Chennai</option>
+            <option>Bengaluru</option>
+            <option>Mumbai</option>
+            <option>Hyderabad</option>
+            <option>Kochi</option>
+          </select>
+        </label>
+        <button class="sign-in-button" id="signInButton" type="button">Sign in</button>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
   </header>
 
-  <main class="page-shell" id="now-showing">
-    <section class="hero">
-      <p class="eyebrow">YOUR NEXT BIG SCREEN MOMENT</p>
-      <h1>Movies worth <span>watching.</span></h1>
-      <p class="hero-copy">Find a story, pick a show, and make it a movie night.</p>
-    </section>
-
-    <section class="section-heading">
-      <div>
-        <p class="eyebrow">CURATED FOR YOU</p>
-        <h2>Now showing</h2>
+  <nav class="secondary-nav" aria-label="Main navigation">
+    <div class="nav-shell">
+      <div class="nav-primary">
+        <a class="active" href="./index.html">Movies</a>
+        <a href="#stream">Stream</a>
+        <a href="#events">Events</a>
+        <a href="#plays">Plays</a>
+        <a href="#sports">Sports</a>
+        <a href="#activities">Activities</a>
       </div>
-      <p class="result-count" id="resultCount" aria-live="polite"></p>
+      <div class="nav-secondary">
+        <a href="#list-your-show">ListYourShow</a>
+        <a href="#corporates">Corporates</a>
+        <a href="#offers">Offers</a>
+        <a href="#gift-cards">Gift Cards</a>
+      </div>
+    </div>
+    <div class="mobile-menu" id="mobileMenu" hidden>
+      <a href="./index.html">Movies</a>
+      <a href="#stream">Stream</a>
+      <a href="#events">Events</a>
+      <a href="#plays">Plays</a>
+      <a href="#sports">Sports</a>
+      <a href="#activities">Activities</a>
+      <a href="#list-your-show">ListYourShow</a>
+      <a href="#offers">Offers</a>
+    </div>
+  </nav>
+
+  <main class="page-shell">
+    <section class="recommendation-section" id="recommended" aria-labelledby="recommendedTitle">
+      <div class="section-heading">
+        <h1 id="recommendedTitle">Recommended Movies</h1>
+        <a class="see-all" href="#all-movies">See All <span aria-hidden="true">›</span></a>
+      </div>
+
+      <div class="movie-status" id="movieStatus" role="status" aria-live="polite">
+        <span id="statusMessage">Loading movies…</span>
+        <button id="retryButton" type="button" hidden>Try again</button>
+      </div>
+
+      <div class="movie-carousel" id="all-movies">
+        <button class="carousel-arrow carousel-prev" id="previousMovies" type="button" aria-label="Previous movies">‹</button>
+        <div class="movie-track" id="movieCards" aria-label="Recommended movies"></div>
+        <button class="carousel-arrow carousel-next" id="nextMovies" type="button" aria-label="Next movies">›</button>
+      </div>
     </section>
 
-    <div id="movieStatus" class="status-panel" role="status" aria-live="polite">Loading movies…</div>
-    <section id="movieCards" class="movie-grid" aria-label="Available movies"></section>
+    <section class="stream-banner" id="stream" aria-label="BookMyShow Stream promotion">
+      <div class="banner-reel banner-reel-one" aria-hidden="true"></div>
+      <div class="banner-reel banner-reel-two" aria-hidden="true"></div>
+      <div class="banner-brand"><span class="brand-book">book</span><span class="brand-my">my</span><span class="brand-show">show</span><span class="stream-label">STREAM</span></div>
+      <p>Endless Entertainment Anytime, Anywhere!</p>
+    </section>
   </main>
 
-  <footer class="site-footer">
+  <footer class="site-footer" id="footer">
     <div class="footer-inner">
-      <a class="brand" href="./index.html"><span class="brand-mark">B</span> BookMyShow</a>
-      <p>An independent movie-booking learning project. Not affiliated with BookMyShow.</p>
+      <a class="brand footer-brand" href="./index.html">
+        <span class="brand-book">book</span><span class="brand-my">my</span><span class="brand-show">show</span>
+      </a>
+      <p>Movie discovery and ticket booking experience.</p>
     </div>
   </footer>
 </body>
